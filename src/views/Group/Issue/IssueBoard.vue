@@ -12,7 +12,16 @@
       <section>
         <h4>할 일</h4>
         <ul class="issue-ul">
-          <li v-for="issue in todos" class="issue-card" :key="issue.id">
+          <li
+            v-for="issue in todos"
+            class="issue-card"
+            :key="issue.id"
+            draggable="true"
+            @dragstart="dragStart(issue, $event)"
+            @dragover.prevent
+            @dragend="dragEnd"
+            @drop="dragFinish(issue, $event)"
+          >
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
               >{{ issue.name || "제목없음" }}</router-link
@@ -23,7 +32,16 @@
       <section>
         <h4>진행 중</h4>
         <ul class="issue-ul">
-          <li v-for="issue in inprogresses" class="issue-card" :key="issue.id">
+          <li
+            v-for="issue in inprogresses"
+            class="issue-card"
+            :key="issue.id"
+            draggable="true"
+            @dragstart="dragStart(issue, $event)"
+            @dragover.prevent
+            @dragend="dragEnd"
+            @drop="dragFinish(issue, $event)"
+          >
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
               >{{ issue.name || "제목없음" }}</router-link
@@ -34,7 +52,16 @@
       <section>
         <h4>리뷰</h4>
         <ul class="issue-ul">
-          <li v-for="issue in reviews" class="issue-card" :key="issue.id">
+          <li
+            v-for="issue in reviews"
+            class="issue-card"
+            :key="issue.id"
+            draggable="true"
+            @dragstart="dragStart(issue, $event)"
+            @dragover.prevent
+            @dragend="dragEnd"
+            @drop="dragFinish(issue, $event)"
+          >
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
               >{{ issue.name || "제목없음" }}</router-link
@@ -45,7 +72,16 @@
       <section>
         <h4>완료</h4>
         <ul class="issue-ul">
-          <li v-for="issue in dones" class="issue-card" :key="issue.id">
+          <li
+            v-for="issue in dones"
+            class="issue-card"
+            :key="issue.id"
+            draggable="true"
+            @dragstart="dragStart(issue, $event)"
+            @dragover.prevent
+            @dragend="dragEnd"
+            @drop="dragFinish(issue, $event)"
+          >
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
               >{{ issue.name || "제목없음" }}</router-link
@@ -84,6 +120,28 @@ export default {
     this.getIssues();
   },
   methods: {
+    dragStart: (which, e) => {
+      e.dataTransfer.setData("Text", this.id);
+      e.dataTransfer.dropEffect = "move";
+      this.dragging = which;
+    },
+
+    dragEnd(e) {
+      this.dragging = -1;
+    },
+
+    dragFinish(to, e) {
+      this.moveItem(this.dragging, to);
+    },
+
+    moveItem(from, to) {
+      if (to === -1) {
+        this.removeItemAt(from);
+      } else {
+        this.inprogresses.splice(to, 0, this.inprogresses.splice(from, 1)[0]);
+      }
+    },
+
     getIssues() {
       firebase
         .firestore()
