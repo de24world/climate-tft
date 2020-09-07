@@ -6,6 +6,7 @@ import router from "./router";
 Vue.use(Vuex);
 // {{$store.state.currentTitle}}
 export default new Vuex.Store({
+  strict: process.env.NODE_ENV !== "production",
   state: {
     isTurnOff: false,
     modalInnerComponent: null,
