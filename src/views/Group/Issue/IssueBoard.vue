@@ -11,83 +11,47 @@
     <div class="board-container">
       <section>
         <h4>할 일</h4>
-        <ul class="issue-ul">
-          <li
-            v-for="issue in todos"
-            class="issue-card"
-            :key="issue.id"
-            draggable="true"
-            @dragstart="dragStart(issue, $event)"
-            @dragover.prevent
-            @dragend="dragEnd"
-            @drop="dragFinish(issue, $event)"
-          >
+        <draggable class="issue-ul" :list="todos" group="issues">
+          <li v-for="issue in todos" class="issue-card" :key="issue.id">
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
               >{{ issue.name || "제목없음" }}</router-link
             ><span>{{ issue.assignee }}</span>
           </li>
-        </ul>
+        </draggable>
       </section>
       <section>
         <h4>진행 중</h4>
-        <ul class="issue-ul">
-          <li
-            v-for="issue in inprogresses"
-            class="issue-card"
-            :key="issue.id"
-            draggable="true"
-            @dragstart="dragStart(issue, $event)"
-            @dragover.prevent
-            @dragend="dragEnd"
-            @drop="dragFinish(issue, $event)"
-          >
+        <draggable class="issue-ul" :list="inprogresses" group="issues">
+          <li v-for="issue in inprogresses" class="issue-card" :key="issue.id">
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
               >{{ issue.name || "제목없음" }}</router-link
             ><span>{{ issue.assignee }}</span>
           </li>
-        </ul>
+        </draggable>
       </section>
       <section>
         <h4>리뷰</h4>
-        <ul class="issue-ul">
-          <li
-            v-for="issue in reviews"
-            class="issue-card"
-            :key="issue.id"
-            draggable="true"
-            @dragstart="dragStart(issue, $event)"
-            @dragover.prevent
-            @dragend="dragEnd"
-            @drop="dragFinish(issue, $event)"
-          >
+        <draggable class="issue-ul" :list="reviews" group="issues">
+          <li v-for="issue in reviews" class="issue-card" :key="issue.id">
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
               >{{ issue.name || "제목없음" }}</router-link
             ><span>{{ issue.assignee }}</span>
           </li>
-        </ul>
+        </draggable>
       </section>
       <section>
         <h4>완료</h4>
-        <ul class="issue-ul">
-          <li
-            v-for="issue in dones"
-            class="issue-card"
-            :key="issue.id"
-            draggable="true"
-            @dragstart="dragStart(issue, $event)"
-            @dragover.prevent
-            @dragend="dragEnd"
-            @drop="dragFinish(issue, $event)"
-          >
+        <draggable class="issue-ul" :list="dones" group="issues">
+          <li v-for="issue in dones" class="issue-card" :key="issue.id">
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
               >{{ issue.name || "제목없음" }}</router-link
             ><span>{{ issue.assignee }}</span>
           </li>
-        </ul>
+        </draggable>
       </section>
     </div>
   </div>
@@ -96,8 +60,14 @@
 <script>
 import firebase from "firebase";
 import IssueForm from "./IssueForm";
+import draggable from "vuedraggable";
 
 export default {
+  name: "kanban-board",
+  components: {
+    //import draggable as a component
+    draggable
+  },
   data() {
     return {
       todos: [],
@@ -120,28 +90,6 @@ export default {
     this.getIssues();
   },
   methods: {
-    dragStart: (which, e) => {
-      e.dataTransfer.setData("Text", this.id);
-      e.dataTransfer.dropEffect = "move";
-      this.dragging = which;
-    },
-
-    dragEnd(e) {
-      this.dragging = -1;
-    },
-
-    dragFinish(to, e) {
-      this.moveItem(this.dragging, to);
-    },
-
-    moveItem(from, to) {
-      if (to === -1) {
-        this.removeItemAt(from);
-      } else {
-        this.inprogresses.splice(to, 0, this.inprogresses.splice(from, 1)[0]);
-      }
-    },
-
     getIssues() {
       firebase
         .firestore()
