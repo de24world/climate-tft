@@ -11,7 +11,13 @@
     <div class="board-container">
       <section>
         <h4>할 일</h4>
-        <draggable class="issue-ul" :list="todos" group="issues">
+        <draggable
+          class="issue-ul"
+          v-model="todos"
+          group="issues"
+          tag="ul"
+          @change="log"
+        >
           <li v-for="issue in todos" class="issue-card" :key="issue.id">
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
@@ -22,7 +28,13 @@
       </section>
       <section>
         <h4>진행 중</h4>
-        <draggable class="issue-ul" :list="inprogresses" group="issues">
+        <draggable
+          class="issue-ul"
+          v-model="inprogresses"
+          group="issues"
+          tag="ul"
+          @change="log"
+        >
           <li v-for="issue in inprogresses" class="issue-card" :key="issue.id">
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
@@ -33,7 +45,13 @@
       </section>
       <section>
         <h4>리뷰</h4>
-        <draggable class="issue-ul" :list="reviews" group="issues">
+        <draggable
+          class="issue-ul"
+          v-model="reviews"
+          group="issues"
+          tag="ul"
+          @change="log"
+        >
           <li v-for="issue in reviews" class="issue-card" :key="issue.id">
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
@@ -44,7 +62,13 @@
       </section>
       <section>
         <h4>완료</h4>
-        <draggable class="issue-ul" :list="dones" group="issues">
+        <draggable
+          class="issue-ul"
+          v-model="dones"
+          group="issues"
+          tag="ul"
+          @change="log"
+        >
           <li v-for="issue in dones" class="issue-card" :key="issue.id">
             <router-link
               :to="'/Group/' + $route.params.groupId + '/Issue/' + issue.id"
@@ -63,7 +87,6 @@ import IssueForm from "./IssueForm";
 import draggable from "vuedraggable";
 
 export default {
-  name: "kanban-board",
   components: {
     //import draggable as a component
     draggable
@@ -90,6 +113,10 @@ export default {
     this.getIssues();
   },
   methods: {
+    log: function(evt) {
+      window.console.log(evt);
+    },
+
     getIssues() {
       firebase
         .firestore()
@@ -114,4 +141,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.issue-ul {
+  padding: 30px;
+}
+</style>
